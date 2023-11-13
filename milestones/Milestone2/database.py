@@ -14,7 +14,8 @@ db_name = os.environ["DB_NAME"]
 
 class Database:
 
-    def connect(self):
+    @staticmethod
+    def connect(bot_name):
         """
         This method creates a connection with your database
         IMPORTANT: all the environment variables must be set correctly
