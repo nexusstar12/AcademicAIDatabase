@@ -12,14 +12,14 @@ from database import Database
 
 
 class TestModel:
-    """
+  """
     This is an object model example. Note that
     this model doesn't implement a DB connection.
     """
 
-    def __init__(self, ctx):
-        self.ctx = ctx
-        self.author = ctx.message.author.name
+  def __init__(self, ctx):
+    self.ctx = ctx
+    self.author = ctx.message.author.name
 
-    def response(self):
-        return f'Hi, {self.author}. I am alive'
+  def response(self):
+    return f'Hi, {self.author}. I am alive'
