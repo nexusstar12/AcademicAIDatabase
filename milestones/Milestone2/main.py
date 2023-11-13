@@ -6,15 +6,21 @@ requirements for this assignments.
 """
 
 import discord
+import os
 from discord.ext import commands
 from models import *
+from database import Database
 
-TOKEN = 'your Discord token'
+TOKEN = os.environ["DISCORD_TOKEN"]
 
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
+@bot.event
+async def on_ready():
+  print(f"Bot {bot.user} has joined the room")
+  Database.connect(bot.user)
 
 @bot.command(name="test", description="write your database business requirement for this command here")
 async def _test(ctx, arg1):
