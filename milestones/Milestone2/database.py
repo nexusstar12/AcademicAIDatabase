@@ -15,26 +15,18 @@ db_name = os.environ["DB_NAME"]
 class Database:
 
     @staticmethod
-    def connect(bot_name):
-        """
-        This method creates a connection with your database
-        IMPORTANT: all the environment variables must be set correctly
-                   before attempting to run this method. Otherwise, it
-                   will throw an error message stating that the attempt
-                   to connect to your database failed.
-        """
-        try:
-            conn = pymysql.connect(host=db_host,
-                                   port=3306,
-                                   user=db_username,
-                                   password=db_password,
-                                   db=db_name,
-                                   charset="utf8mb4", cursorclass=pymysql.cursors.DictCursor)
-            print("Bot connected to database {}".format(db_name))
-            return conn
-        except ConnectionError as err:
-            print(f"An error has occurred: {err.args[1]}")
-            print("\n")
+    def connect():
+      try:
+          conn = pymysql.connect(host=db_host,
+                                 port=3306,
+                                 user=db_username,
+                                 password=db_password,
+                                 db=db_name,
+                                 charset="utf8mb4", cursorclass=pymysql.cursors.DictCursor)
+          print("Bot connected to database {}".format(db_name))
+          return conn
+      except Exception as e:
+          print(f"An error has occurred: {e}")
 
     #TODO: needs to implement the internal logic of all the main query operations
     def get_response(self, query, values=None, fetch=False, many_entities=False):
@@ -50,21 +42,75 @@ class Database:
         return response
 
     @staticmethod
-    def select(query, values=None, fetch=True):
-        database = Database()
-        return database.get_response(query, values=values, fetch=fetch)
-
+    def select(query, values=None):
+        connection = Database.connect()
+        if connection is None:
+            print("Failed to connect to the database.")
+            return None
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, values)
+                result = cursor.fetchall()
+                return result
+        except Exception as e:
+            print(f"An error occurred while executing the query: {e}")
+        finally:
+            if connection:
+                connection.close()
+  
     @staticmethod
-    def insert(query, values=None, many_entities=False):
-        database = Database()
-        return database.get_response(query, values=values, many_entities=many_entities)
+    def insert(query, values=None):
+        connection = Database.connect()
+        if connection is None:
+            print("Failed to connect to the database.")
+            return False
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, values)
+                connection.commit()
+            return True
+        except Exception as e:
+            print(f"An error occurred while executing the query: {e}")
+            return False
+        finally:
+            if connection:
+                connection.close()
 
     @staticmethod
     def update(query, values=None):
-        database = Database()
-        return database.get_response(query, values=values)
+        connection = Database.connect()
+        if connection is None:
+            print("Failed to connect to the database.")
+            return False
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, values)
+                connection.commit()
+            return True
+        except Exception as e:
+            print(f"An error occurred while executing the query: {e}")
+            return False
+        finally:
+            if connection:
+                connection.close()
 
     @staticmethod
     def delete(query, values=None):
-        database = Database()
-        return database.get_response(query, values=values)
+        connection = Database.connect()
+        if connection is None:
+            print("Failed to connect to the database.")
+            return False
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, values)
+                connection.commit()
+            return True
+        except Exception as e:
+            print(f"An error occurred while executing the query: {e}")
+            return False
+        finally:
+            if connection:
+                connection.close()
